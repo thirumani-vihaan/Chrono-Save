@@ -1,16 +1,18 @@
-# Chrono Save — Campaign Analytics
+# Terminus — Campaign Cessation Oracle
 
-> A fictional, in‑world **game‑campaign decision tool**. It weighs the projected
-> stagnation of your current build against the upside of **ending the game** for a
-> fresh start, and tells you whether to **Keep**, hold at **Equilibrium**, or
-> **End Game**.
+> You are lingering in the late hours of a dying run. The grind is heavy, the build has stagnated, and the progress has ground to a halt. 
+>
+> But this game is only played once. There are no restarts. There is no fresh start. If you choose to end the campaign, the window closes forever and your journey is permanently over. Do you persist in the creeping decay, or do you sever the thread?
+>
+> **Terminus** is the Cessation Oracle. It weighs the projected stagnation of your current build against the permanent finality of ending the game, deciding whether you should **Keep** holding the line, wait at **Equilibrium**, or choose **End Game**.
 
-Built with **Next.js 16 (App Router)** + **TypeScript**, a **React Three Fiber**
-scene of drifting greyscale busts, and **Framer Motion** transitions throughout.
+Built with **Next.js 16 (App Router)** + **TypeScript**, a **React Three Fiber** scene of drifting greyscale busts that watch your decisions, and **Framer Motion** transitions throughout.
+
+---
 
 ## Showcase
 
-![Chrono Save Landing Page](screenshots/1-hero.png)
+![Terminus Landing Page](screenshots/1-hero.png)
 
 <p align="center">
   <img src="screenshots/2-console.png" width="49%" alt="Evaluation Console" />
@@ -23,12 +25,12 @@ scene of drifting greyscale busts, and **Framer Motion** transitions throughout.
 
 - [Showcase](#showcase)
 - [Quick start](#quick-start)
-- [How it works](#how-it-works)
-- [The mathematical engine](#the-mathematical-engine)
-- [Inputs](#inputs)
-- [Verdicts](#verdicts)
+- [The Lore of Cessation](#the-lore-of-cessation)
+- [The Mathematical Engine](#the-mathematical-engine)
+- [Inputs for Calibration](#inputs-for-calibration)
+- [Verdicts of the Oracle](#verdicts-of-the-oracle)
 - [Architecture](#architecture)
-- [The 3D scene](#the-3d-scene)
+- [The 3D Watchers](#the-3d-watchers)
 - [Scripts](#scripts)
 
 ---
@@ -51,11 +53,9 @@ npm run dev      # http://localhost:3000
 
 ---
 
-## How it works
+## The Lore of Cessation
 
-You calibrate your campaign with three core sliders (plus an optional **Advanced
-Context** panel of seven more). The model converts those inputs into a single
-**Continuity Index (CI, 0–100)** and a verdict, updated live on every change.
+Every single-playthrough campaign reaches a point of friction. The oracle quantifies this dilemma:
 
 ```mermaid
 flowchart LR
@@ -76,10 +76,9 @@ flowchart LR
 
 ---
 
-## The mathematical engine
+## The Mathematical Engine
 
-All formulas live in [`src/lib/calculations.ts`](src/lib/calculations.ts).
-The pipeline:
+The equations governing your finality are defined in [`src/lib/calculations.ts`](src/lib/calculations.ts). They weigh persistence against termination:
 
 ```mermaid
 flowchart TD
@@ -108,67 +107,55 @@ flowchart TD
     CIc --> VR{Verdict}
 ```
 
-| Symbol | Name | Formula |
-| --- | --- | --- |
-| `R` | Remaining turns | `82 − Level` |
-| `T` | Neutral threshold | `R / 2` |
-| `TOP` | Temporal Optionality Premium | `R × 0.07` |
-| `UDF` | Uncertainty Decay Factor | `1 / (1 + log10(S + 1))` |
-| `EDI` | Effective Stagnation Weight | `S × C^1.15 × UDF` |
-| `RS` | Resilience Score | `avg` of the 6 context stats |
-| `DRT` | Dynamic End Threshold | `T + TOP − ResilienceBonus − SensitivityBias` |
-| `Δ` | Delta (core decision metric) | `DRT − EDI` |
-| `CI` | Continuity Index | `clamp(50 + Δ × 2, 0, 100)` |
+| Symbol | Name | Formula | Meaning in the Void |
+| --- | --- | --- | --- |
+| `R` | Remaining turns | `82 − Level` | The runway before natural end game occurs. |
+| `T` | Neutral threshold | `R / 2` | The neutral point where persistence and letting go are equal. |
+| `TOP` | Temporal Optionality Premium | `R × 0.07` | The value of holding on (longer runs allow more lucky events). |
+| `UDF` | Uncertainty Decay Factor | `1 / (1 + log10(S + 1))` | Natural decay of your forecasts over extended stagnation. |
+| `EDI` | Effective Stagnation Weight | `S × C^1.15 × UDF` | The felt weight of your build's decay. |
+| `RS` | Resilience Score | `avg` of the 6 context stats | How well you are supported in resisting termination. |
+| `DRT` | Dynamic End Threshold | `T + TOP − ResilienceBonus − SensitivityBias` | The point at which the decay becomes statistically terminal. |
+| `Δ` | Delta (core metric) | `DRT − EDI` | The mathematical gap between staying and terminating. |
+| `CI` | Continuity Index | `clamp(50 + Δ × 2, 0, 100)` | The overall rating of your run's survivability. |
 
-Constants: `MAX_LEVEL = 82`, `TOP_MULTIPLIER = 0.07`,
-`RESILIENCE_SCALE = 10`, `SENSITIVITY_SCALE = 15`, `CERTAINTY_CAP = 0.90`.
+Constants: `MAX_LEVEL = 82`, `TOP_MULTIPLIER = 0.07`, `RESILIENCE_SCALE = 10`, `SENSITIVITY_SCALE = 15`, `CERTAINTY_CAP = 0.90`.
 
-> Higher resilience and higher **End Sensitivity** both lower the Dynamic End
-> Threshold, making an **End Game** verdict easier to reach.
+*Note: High resilience and higher End Sensitivity both lower the Dynamic End Threshold, shifting the balance closer to the permanent finality of an End Game verdict.*
 
 ---
 
-## Inputs
+## Inputs for Calibration
 
-### Core (always visible)
+### Core Sliders (Always Visible)
 
-| Input | Range | Default | Step |
+| Input | Range | Default | Impact on the Oracle |
 | --- | --- | --- | --- |
-| Character Level | 1–100 | 30 | 1 |
-| Projected Stagnation Period | 0–80 | 5 | 0.5 |
-| Certainty | 0.00–0.90 | 0.50 | 0.01 |
+| Character Level | 1–100 | 30 | Higher levels shrink the remaining turns, reducing optionality. |
+| Projected Stagnation Period | 0–80 | 5 | The length of time you expect to wander in the build's desert. |
+| Certainty | 0.00–0.90 | 0.50 | Dragging this above `0.90` triggers an epistemic-humility modal and snaps you back to the cap. Absolute certainty is a illusion. |
 
-Dragging **Certainty** above `0.90` triggers an epistemic‑humility modal and
-snaps the value back to the cap (see
-[`src/hooks/useSliderLogic.ts`](src/hooks/useSliderLogic.ts)).
-
-### Advanced Context (collapsible)
+### Advanced Context (Collapsible)
 
 | Input | Range | Default | Meaning |
 | --- | --- | --- | --- |
-| Morale | 0–100 | 60 | Current satisfaction with the campaign |
-| Ally Strength | 0–100 | 50 | Social / guild support |
-| Resource Reserves | 0–100 | 50 | Gold, items, mana |
-| Stamina / Sanity | 0–100 | 70 | Physical / mental condition |
-| Build Versatility | 0–100 | 50 | Ability to pivot within the build |
-| World RNG Events | 0–100 | 50 | External lucky / unlucky events |
-| End Sensitivity | 0–100 | 50 | Personal bias toward ending (Conservative → Aggressive) |
-
-The defaults yield **CI ≈ 80.8 → Keep Campaign** on first load.
+| Morale | 0–100 | 60 | Your character's current will to keep pushing. |
+| Ally Strength | 0–100 | 50 | Social, guild, or external support to sustain the run. |
+| Resource Reserves | 0–100 | 50 | Gold, inventory items, and stockpiled assets. |
+| Stamina / Sanity | 0–100 | 70 | Your physical and mental condition. |
+| Build Versatility | 0–100 | 50 | The capacity to adapt your build without ending the run. |
+| World RNG Events | 0–100 | 50 | The volatility of external lucky/unlucky incidents. |
+| End Sensitivity | 0–100 | 50 | Your personal bias toward finality (Conservative $\to$ Aggressive). |
 
 ---
 
-## Verdicts
+## Verdicts of the Oracle
 
-| Verdict | Band | Meaning |
+| Verdict | Continuity Index | Meaning |
 | --- | --- | --- |
-| **Keep Campaign** | `CI > 70` | Current build is the stronger expected path. |
-| **Equilibrium** | `30 ≤ CI ≤ 70` | Balanced — either choice can be justified. |
-| **End Game** | `CI < 30` | Projected stagnation overtakes the buffer; a new campaign is the safer bet. |
-
-The results dashboard renders the verdict, a circular **Continuity Index** gauge
-(red → yellow → cyan), an **Uncertainty Buffer** bar, and a breakdown of `R`,
-`EDI`, `DRT`, `Δ`, and the **Resilience Score**.
+| **Keep Campaign** | `CI > 70` | Persist. The current build remains your strongest path. Keep going. |
+| **Equilibrium** | `30 ≤ CI ≤ 70` | A balanced state. Either choice can be justified. Choose carefully. |
+| **End Game** | `CI < 30` | The decay has won. Stagnation exceeds your optionality. Pull the plug and accept the end. |
 
 ---
 
@@ -191,24 +178,20 @@ flowchart TD
     RD -. metrics .-> CALC
 ```
 
-Key files:
-
-- `src/lib/calculations.ts` — the engine, `Verdict` type, `VERDICT_META`, and `getContinuityColor`.
-- `src/hooks/useSliderLogic.ts` — integer/decimal clamps and the Certainty cap.
-- `src/components/sections/ControlPanel.tsx` — all sliders + Advanced accordion + Reset.
-- `src/components/sections/ResultsDashboard.tsx` — verdict, gauge, buffer bar, breakdown.
-- `src/components/ui/GaugeMeter.tsx` — animated circular SVG gauge.
-- `src/components/three/Scene.tsx` — R3F scene, particles, cursor‑following busts.
+Core Modules:
+* `src/lib/calculations.ts` — The mathematical engine, types, and color interpolations.
+* `src/hooks/useSliderLogic.ts` — Boundary clamps and the certainty-cap validation.
+* `src/components/sections/ControlPanel.tsx` — Calibrating sliders and advanced context.
+* `src/components/sections/ResultsDashboard.tsx` — Live verdicts, gauge meter, and stat card breakdown.
+* `src/components/ui/GaugeMeter.tsx` — SVG circle animations driven by spring physics.
+* `src/components/three/Scene.tsx` — React Three Fiber scene containing the gaze-tracking busts.
 
 ---
 
-## The 3D scene
+## The 3D Watchers
 
-Four greyscale busts drift in space. The mask **nearest the cursor** snaps its
-attention toward the pointer and tracks it with a slight organic latency, then
-slowly relaxes back to its neutral, expressionless drift when the cursor leaves.
-Because the canvas is `pointer-events-none`, pointer position is captured via
-`window` listeners and fed into the scene as normalized device coordinates.
+Four greyscale busts drift in the dark background. They are the silent watchers of your decision.
+The bust **nearest your cursor** will snap its attention to follow your movement, tracking you with slight latency. Once your cursor leaves or goes idle, they relax back into their expressionless, infinite drift. 
 
 ```mermaid
 sequenceDiagram
@@ -230,13 +213,12 @@ sequenceDiagram
 
 | Command | Description |
 | --- | --- |
-| `npm run dev` | Start the dev server (Turbopack). |
-| `npm run build` | Production build. |
+| `npm run dev` | Start the local oracle console (Turbopack). |
+| `npm run build` | Compile the static production build. |
 | `npm run start` | Serve the production build. |
-| `npm run lint` | ESLint. |
-| `npm run format` | Prettier write. |
+| `npm run lint` | Run ESLint check. |
+| `npm run format` | Run Prettier code formatting. |
 
 ---
 
-*Chrono Save is a fictional campaign decision tool; all figures are in‑world game
-mechanics. Head sculpture: Lee Perry‑Smith (Infinite‑Realities) · CC BY 3.0.*
+*Terminus is an in-universe cessation decision oracle; all figures represent campaign design mechanics. Head sculpture asset: Lee Perry‑Smith (Infinite‑Realities) · CC BY 3.0.*

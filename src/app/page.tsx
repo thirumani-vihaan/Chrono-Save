@@ -212,7 +212,7 @@ export default function Home() {
 
         <footer className="border-t border-white/8 px-6 py-10 text-center">
           <p className="text-xs text-zinc-600">
-            Chrono Save · a fictional campaign decision tool. All figures are
+            Terminus · a campaign cessation decision oracle. All figures are
             in-world game mechanics.
           </p>
           <p className="mt-2 text-[0.65rem] text-zinc-700">

@@ -17,9 +17,9 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Chrono Save — Optimise your campaign's expected outcome",
+  title: "Terminus — Campaign Cessation Oracle",
   description:
-    "A fictional game-campaign decision tool. Weigh the projected stagnation of your current build against the potential of ending the game for a fresh start.",
+    "A campaign decision tool for the single-playthrough game. Weigh the projected stagnation of your current build against the permanent finality of ending the game.",
 };
 
 export const viewport: Viewport = {

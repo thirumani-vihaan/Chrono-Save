@@ -23,7 +23,7 @@ export default function Navbar() {
             <Hourglass className="h-4 w-4 text-cyan-300" />
           </span>
           <span className="text-sm font-semibold tracking-[0.2em] text-zinc-100">
-            CHRONO<span className="text-zinc-500"> SAVE</span>
+            TERMINUS<span className="text-zinc-500"> ORACLE</span>
           </span>
         </a>
 

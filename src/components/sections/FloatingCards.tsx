@@ -17,7 +17,7 @@ interface FloatCard {
 const cards: FloatCard[] = [
   {
     quote:
-      "Ended the run at level 12. Three builds later the synergies finally clicked.",
+      "I held onto a decaying build until it was too late. I should have severed it at level 12.",
     who: "The Wanderer",
     pos: "left-2 top-[6%] xl:left-6",
     dur: 12,
@@ -44,7 +44,7 @@ const cards: FloatCard[] = [
     to: "#4c3f78",
   },
   {
-    quote: "Continuity index read 22. A fresh start unlocked everything.",
+    quote: "Continuity index read 22. I cut the cord, and let the run dissolve.",
     who: "The Strider",
     pos: "right-2 top-[64%] xl:right-6",
     dur: 11,
