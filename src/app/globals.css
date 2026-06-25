@@ -53,7 +53,7 @@ body {
   border: 1px solid color-mix(in oklab, white 8%, transparent);
 }
 
-@keyframes terminus-float {
+@keyframes horizon-float {
   0%,
   100% {
     transform: translateY(0);
@@ -63,7 +63,7 @@ body {
   }
 }
 
-@keyframes terminus-pulse-glow {
+@keyframes horizon-pulse-glow {
   0%,
   100% {
     opacity: 0.55;
@@ -151,7 +151,7 @@ body {
     transparent 70%
   );
   filter: blur(6px);
-  animation: terminus-pulse-glow 6s ease-in-out infinite;
+  animation: horizon-pulse-glow 6s ease-in-out infinite;
 }
 .orbit-glow-sm {
   position: absolute;

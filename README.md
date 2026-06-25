@@ -1,254 +1,142 @@
-# Terminus — Cessation Oracle
+# Horizon — Decision-Theory Explorer
 
-> You are standing at the edge of an uncertain future. The path forward is shrouded — fragments of joy, stretches of suffering, and threads of meaning interweave beyond the horizon you can see.
->
-> There is no turning back. There are no second chances, no restarts, and no reprieves. If you choose to end it, the thread is severed forever. Do you continue into the unknown, or do you accept permanent finality?
->
-> **Terminus** is the Cessation Oracle. By projecting your expected happiness, suffering, and meaning across the visible horizon — and modelling the expanding uncertainty beyond it — the oracle calculates whether you should continue or sever the thread permanently. Continuing is the default path. But when the projected suffering eclipses all meaning, and the cone narrows toward darkness, the oracle speaks.
+An interactive, professional-grade dashboard for modeling, simulating, and visualizing how projected outcomes and uncertainty horizons influence directional decisions.
 
-Built with **Next.js 16 (App Router)** + **TypeScript**, a **React Three Fiber** scene of drifting greyscale busts that watch your decisions, and **Framer Motion** transitions throughout.
+Horizon is designed to help analysts, strategic planners, and individuals map the long-term viability of their current trajectories. By weighing satisfaction, difficulty, and purpose against a dynamic planning horizon, Horizon mathematically evaluates whether to persevere along a path or pivot toward a new direction.
 
 ---
 
-## Showcase
+## Technical Showcase
 
-![Terminus Landing Page](screenshots/1-hero.png)
+Below is a visual walk-through of the Horizon dashboard in desktop resolution:
 
-<p align="center">
-  <img src="screenshots/2-console.png" width="49%" alt="Evaluation Console" />
-  <img src="screenshots/3-lore.png" width="49%" alt="Lore of Cessation" />
-</p>
+### 1. Hero & Welcome Section
+The landing page establishes the philosophical and theoretical context of the explorer, featuring drifting glass cards that reflect real-world feedback on decision-making and forecasting limits.
+![Horizon Hero Section](screenshots/1-hero.png)
 
----
+### 2. The Decision Console
+The main control panel where users input their projected satisfaction, difficulty, and purpose, along with respective confidence weights and a set visibility horizon.
+![Horizon Decision Console](screenshots/2-console.png)
 
-## Contents
+### 3. Possibility Cone & Results
+A real-time SVG visualization showing the expansion of uncertainty beyond the visibility horizon, accompanied by the calculated Continuity Index and decision verdict.
+![Possibility Cone and Verdict Results](screenshots/3-results.png)
 
-- [Showcase](#showcase)
-- [Quick start](#quick-start)
-- [The Lore of Cessation](#the-lore-of-cessation)
-- [The Mathematical Engine](#the-mathematical-engine)
-- [Inputs for Calibration](#inputs-for-calibration)
-- [Verdicts of the Oracle](#verdicts-of-the-oracle)
-- [Architecture](#architecture)
-- [The 3D Watchers](#the-3d-watchers)
-- [Scripts](#scripts)
+### 4. Methodology & Theoretical Foundation
+The interactive documentation explaining the philosophical lineage (existentialism, decision theory) and the mathematical formulas governing the simulation engine.
+![Methodology and Theory Detail](screenshots/4-method.png)
 
 ---
 
-## Quick start
+## Core Features
 
-```bash
-npm install
-npm run dev      # http://localhost:3000
-```
-
-> **Note (OneDrive users):** Turbopack's dev HMR can fail with a file‑lock error
-> (`os error 32` / `EPERM unlink .next/...`) inside OneDrive‑synced folders. If
-> you hit this, use a production build instead, which serves reliably:
->
-> ```bash
-> npm run build
-> npm run start   # http://localhost:3000
-> ```
-
----
-
-## The Lore of Cessation
-
-Every existence reaches a crossroads. The oracle does not measure stagnation — it projects experience across three dimensions, then models what lies beyond the edge of sight:
-
-```mermaid
-flowchart LR
-    subgraph Inputs
-        A1[Character Level]
-        A2[Expected Happiness + Confidence]
-        A3[Expected Suffering + Confidence]
-        A4[Expected Meaning + Confidence]
-        A5[Future Visibility]
-        A6[Advanced Context<br/>6 resilience stats + End Sensitivity]
-    end
-
-    A1 & A2 & A3 & A4 & A5 & A6 --> ENGINE[calculateCampaignMetrics]
-    ENGINE --> CI[Continuity Index 0–100]
-    CI --> V{Verdict}
-    V -->|CI &gt; 70| KEEP[Continue Existence]
-    V -->|30 ≤ CI ≤ 70| EQ[Equilibrium]
-    V -->|CI &lt; 30| END[End Existence Forever]
-```
+- **Multi-Dimensional Projections**: Projects satisfaction (expected quality), difficulty (expected obstacles), and purpose (underlying meaning) over a designated trajectory.
+- **Epistemic Confidence Weights**: Decoupled confidence sliders ($0.1$ to $0.9$) for each dimension, allowing users to express high certainty in one aspect while remaining highly uncertain about another.
+- **Visibility Horizon & Uncertainty Cones**: Simulates the natural decay of predictive foresight. Beyond the user-defined visibility horizon, an SVG possibility cone expands, mathematically pulling outcomes toward a neutral equilibrium to prevent premature termination under high uncertainty.
+- **Reflective Spatial Experience**: Implements a responsive 3D gaze-tracking particle field built on React Three Fiber, providing a premium visual layer that reacts dynamically to cursor hover and movement.
+- **Dynamic Continuity Index (CI)**: Synthesizes core metrics and resilience modifiers into a unified score from $0$ to $100$ to output one of four mathematical verdicts.
 
 ---
 
 ## The Mathematical Engine
 
-The equations governing finality are defined in [`src/lib/calculations.ts`](src/lib/calculations.ts). They weigh projected experience against the expanding uncertainty of an unknowable future:
+The calculations powering Horizon are executed in real time within the client-side engine.
 
-```mermaid
-flowchart TD
-    L[Level] --> R["R = 82 − Level<br/>(remaining runway)"]
-    R --> T["T = R / 2<br/>(neutral 50/50 prior)"]
-    R --> TOP["TOP = R × 0.07<br/>(Temporal Optionality Premium)"]
+### 1. Net Experience Score (NES)
+The foundation of the model is the Net Experience Score ($NES$), which computes a confidence-weighted balance between satisfaction, purpose, and difficulty:
 
-    H[Expected Happiness] --> NES
-    S[Expected Suffering] --> NES
-    M[Expected Meaning] --> NES
-    Hc[Happiness Conf] --> NES
-    Sc[Suffering Conf] --> NES
-    Mc[Meaning Conf] --> NES
-    NES["NES = (H·Hc + M·Mc − S·Sc) / (Hc+Mc+Sc)<br/>(Net Experience Score)"]
+$$NES = \frac{H \cdot H_c + M \cdot M_c - S \cdot S_c}{H_c + M_c + S_c}$$
 
-    NES --> EQI["EQI = clamp((NES + 100) / 2, 0, 100)<br/>(Experience Quality Index)"]
+Where:
+* $H, S, M \in [0, 100]$ represent Expected Satisfaction, Expected Difficulty, and Expected Purpose, respectively.
+* $H_c, S_c, M_c \in [0.1, 0.9]$ represent the user's subjective confidence weights in their forecasts.
 
-    FV[Future Visibility] --> VR["VR = FV / R<br/>(Visibility Ratio)"]
-    R --> VR
-    VR --> CW["CW = (1 − VR) × 100<br/>(Cone Width)"]
+### 2. Experience Quality Index (EQI)
+To establish a normalized baseline, the $NES$ (which range asymmetrically from roughly $-100$ to $+100$) is scaled to a standard $0$ to $100$ index:
 
-    EQI --> EQIadj["EQI′ = EQI + (50 − EQI) · CW · 0.6<br/>(Cone-Adjusted EQI)"]
-    CW --> EQIadj
+$$EQI = \text{clamp}\left(\frac{NES + 100}{2}, 0, 100\right)$$
 
-    CTX[6 context stats] --> RS["RS = avg(morale, ally, resources,<br/>stamina, versatility, rng)"]
-    RS --> RB["Resilience Bonus = (RS / 100) × 10"]
-    Sen[End Sensitivity] --> SB["Sensitivity Bias = (Sen / 100) × 15"]
+### 3. Future Visibility Ratio ($V_R$) and Cone Width ($C_W$)
+The remaining path length is defined as $R = 82 - \text{level}$. The Future Visibility Ratio ($V_R$) represents the proportion of the remaining path that is visible:
 
-    T --> DRT
-    TOP --> DRT
-    RB --> DRT
-    SB --> DRT
-    DRT["DRT = T + TOP − RB − SB<br/>(Dynamic End Threshold)"]
+$$V_R = \text{clamp}\left(\frac{FV}{R}, 0, 1\right)$$
 
-    DRT --> D["Delta = DRT − (100 − EQI′)"]
-    EQIadj --> D
-    D --> CIc["CI = clamp(50 + Delta × 2, 0, 100)"]
-    CIc --> VR2{Verdict}
+Where $FV \in [1, 50]$ is the user-defined Future Visibility horizon. The uncertainty Cone Width ($C_W$) is the percentage of the remaining path that lies in total forecasting darkness:
+
+$$C_W = (1 - V_R) \times 100$$
+
+### 4. Cone-Adjusted EQI ($EQI_{adj}$)
+As uncertainty grows, the model pulls the quality index toward a neutral equilibrium ($50$). This prevents extreme recommendations (such as closing a path) when foresight is limited:
+
+$$EQI_{adj} = EQI + (50 - EQI) \times \frac{C_W}{100} \times \text{CONE\_DAMPING}$$
+
+Where $\text{CONE\_DAMPING} = 0.4$.
+
+### 5. Continuity Index (CI)
+The raw index is amplified to fill the full dynamic scale and is then adjusted by optionality, resilience modifiers, and threshold biases:
+
+$$rawCI = (EQI_{adj} - 50) \times \text{AMPLIFY} + 50$$
+
+$$CI = \text{clamp}(rawCI + \text{optionalityBoost} + \text{resilienceBoost} + \text{thresholdBias}, 0, 100)$$
+
+Where:
+* $\text{AMPLIFY} = 2.5$ (stretches the typical cone-compressed index).
+* $\text{optionalityBoost} = (R \times 0.07) \times 0.3$ (longer horizons add a minor incentive to persist).
+* $\text{resilienceBoost} = \frac{RS}{100} \times 4$ (average of resilience metrics: morale, ally support, resources, stamina, versatility, and random events).
+* $\text{thresholdBias} \in [-10, 10]$ is a user-configurable offset.
+
+### 6. Decision Verdicts
+Based on the final Continuity Index ($CI$) and uncertainty Cone Width ($C_W$), the engine issues one of four verdicts:
+
+* **Wait** ($C_W > 80$): Uncertainty is too high to make an assessment; users are advised to wait for more visibility.
+* **Continue Path** ($CI > 70$): Outcomes and confidence support staying on the current trajectory.
+* **Balanced** ($30 \le CI \le 70$): Projected benefits and costs weigh equally. Either choice can be justified.
+* **Reassessment Recommended** ($CI < 30$): Projected difficulty dominates satisfaction and purpose. Pivot recommended.
+
+---
+
+## Tech Stack
+
+* **Framework**: [Next.js 15](https://nextjs.org/) (App Router, TypeScript)
+* **3D Graphics**: [React Three Fiber](https://r3f.docs.pmnd.rs/getting-started/introduction) (R3F) & `@react-three/drei`
+* **Animations**: [Framer Motion](https://www.framer.com/motion/)
+* **Styling**: Vanilla CSS & [Tailwind CSS](https://tailwindcss.com/)
+* **Icons**: [Lucide React](https://lucide.dev/)
+
+---
+
+## Getting Started
+
+### Installation
+Clone the repository and install the dependencies:
+```bash
+npm install
 ```
 
-| Symbol | Name | Formula | Meaning |
-| --- | --- | --- | --- |
-| `R` | Remaining runway | `82 − Level` | The timeline remaining before natural end. |
-| `T` | Neutral threshold | `R / 2` | The point where persisting and ending are equal. |
-| `TOP` | Temporal Optionality Premium | `R × 0.07` | The value of continuing (longer horizons allow more experience). |
-| `NES` | Net Experience Score | `(H·Hc + M·Mc − S·Sc) / Σc` | Confidence-weighted balance of projected experience. |
-| `EQI` | Experience Quality Index | `(NES + 100) / 2` | Normalised experience quality on a 0–100 scale. |
-| `VR` | Visibility Ratio | `FV / R` | What fraction of the remaining runway is "visible." |
-| `CW` | Cone Width | `(1 − VR) × 100` | Percentage uncertainty beyond the visibility horizon. |
-| `EQI′` | Cone-Adjusted EQI | `EQI + (50 − EQI) · CW · 0.6` | EQI pulled toward 50 by uncertainty — you can't be sure of what you can't see. |
-| `RS` | Resilience Score | `avg` of the 6 context stats | External support for resisting termination. |
-| `DRT` | Dynamic End Threshold | `T + TOP − RB − SB` | The threshold at which cessation becomes rational. |
-| `Δ` | Delta (core metric) | `DRT − (100 − EQI′)` | The gap between continuing and ending. |
-| `CI` | Continuity Index | `clamp(50 + Δ × 2, 0, 100)` | The overall rating of your path's viability. |
-
-Constants: `MAX_LEVEL = 82`, `TOP_MULTIPLIER = 0.07`, `RESILIENCE_SCALE = 10`, `SENSITIVITY_SCALE = 15`, `CERTAINTY_CAP = 0.90`, `CONE_DAMPING = 0.60`.
-
-*Note: Low Future Visibility widens the Possibility Cone, which pulls the Continuity Index toward Equilibrium — preventing premature endings when you simply cannot see far enough ahead.*
-
----
-
-## Inputs for Calibration
-
-### Core Inputs (Always Visible)
-
-| Input | Range | Default | Impact on the Oracle |
-| --- | --- | --- | --- |
-| Character Level | 1–100 | 30 | Higher levels shrink the remaining runway, reducing optionality. |
-
-### Future Experience Projection
-
-| Input | Range | Default | Impact on the Oracle |
-| --- | --- | --- | --- |
-| Expected Happiness | 0–100 | 60 | Projected well-being and fulfillment over the visible horizon. |
-| → Happiness Confidence | 0.00–0.90 | 0.50 | How certain this happiness forecast is. Capped at 0.90. |
-| Expected Suffering | 0–100 | 30 | Projected hardship, pain, and decay ahead. |
-| → Suffering Confidence | 0.00–0.90 | 0.50 | How certain this suffering forecast is. Capped at 0.90. |
-| Expected Meaning | 0–100 | 50 | Projected purpose, significance, and reason to persist. |
-| → Meaning Confidence | 0.00–0.90 | 0.50 | How certain this meaning forecast is. Capped at 0.90. |
-| Future Visibility | 1–50 | 15 | How far ahead you can reasonably see. Low visibility widens the Possibility Cone. |
-
-Dragging any confidence slider above `0.90` triggers an epistemic-humility modal — absolute certainty of the future is an illusion.
-
-### Advanced Context (Collapsible)
-
-| Input | Range | Default | Meaning |
-| --- | --- | --- | --- |
-| Morale | 0–100 | 60 | Current will to persist. |
-| Ally Strength | 0–100 | 50 | Social and external support. |
-| Resource Reserves | 0–100 | 50 | Accumulated assets, energy, and reserves. |
-| Stamina / Sanity | 0–100 | 70 | Physical and mental condition. |
-| Versatility | 0–100 | 50 | Capacity to adapt without ending. |
-| World RNG Events | 0–100 | 50 | External lucky/unlucky incidents. |
-| End Sensitivity | 0–100 | 50 | Personal bias toward finality (Conservative → Aggressive). |
-
----
-
-## Verdicts of the Oracle
-
-| Verdict | Continuity Index | Meaning |
-| --- | --- | --- |
-| **Continue Existence** | `CI > 70` | The projected experience favours continuation. The possibility cone supports persisting. |
-| **Equilibrium** | `30 ≤ CI ≤ 70` | The oracle cannot see clearly, or the projections are balanced. Either choice can be justified. |
-| **Cessation Recommended** | `CI < 30` | Projected suffering eclipses happiness and meaning across the visible horizon. Ending is the rational path. |
-
----
-
-## Architecture
-
-```mermaid
-flowchart TD
-    PAGE["app/page.tsx<br/>(state + useMemo metrics)"]
-
-    PAGE --> CANVAS["three/SceneCanvas → three/Scene<br/>(drifting busts + particles)"]
-    PAGE --> CP["sections/ControlPanel<br/>(experience projection + visibility + advanced sliders)"]
-    PAGE --> RD["sections/ResultsDashboard<br/>(verdict + cone + breakdown)"]
-    PAGE --> MODAL["ui/ConfidenceModal"]
-    PAGE --> EXTRA["Navbar · Hero · OrbitField ·<br/>FloatingCards · LoreAccordion"]
-
-    PAGE -. uses .-> HOOK["hooks/useSliderLogic<br/>(clamp + certainty cap)"]
-    PAGE -. uses .-> CALC["lib/calculations<br/>(engine + verdict meta + colors)"]
-    RD --> GAUGE["ui/GaugeMeter"]
-    RD --> CONE["PossibilityCone SVG"]
-    CP -. inputs .-> CALC
-    RD -. metrics .-> CALC
+### Run Locally
+Launch the local development server:
+```bash
+npm run dev
 ```
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-Core Modules:
-* `src/lib/calculations.ts` — The mathematical engine: NES, EQI, Possibility Cones, and color interpolations.
-* `src/hooks/useSliderLogic.ts` — Boundary clamps and the certainty-cap validation.
-* `src/components/sections/ControlPanel.tsx` — Experience projection sliders, visibility, and advanced context.
-* `src/components/sections/ResultsDashboard.tsx` — Live verdicts, gauge meter, possibility cone SVG, and stat card breakdown.
-* `src/components/ui/GaugeMeter.tsx` — SVG circle animations driven by spring physics.
-* `src/components/three/Scene.tsx` — React Three Fiber scene containing the gaze-tracking busts.
-
----
-
-## The 3D Watchers
-
-Four greyscale busts drift in the dark background. They are the silent watchers of your decision.
-The bust **nearest your cursor** will snap its attention to follow your movement, tracking you with slight latency. Once your cursor leaves or goes idle, they relax back into their expressionless, infinite drift. 
-
-```mermaid
-sequenceDiagram
-    participant Mouse
-    participant Rig
-    participant Head as Nearest Head
-    Mouse->>Rig: pointermove (NDC)
-    Rig->>Rig: pick nearest mask within radius
-    Rig->>Head: activeIndex
-    Head->>Head: snap focus up (fast), track gaze (latent)
-    Mouse-->>Rig: pointerleave
-    Rig->>Head: activeIndex = -1
-    Head->>Head: focus decays slowly → dead drift
+### Build Production
+Create a compiled production bundle:
+```bash
+npm run build
 ```
 
 ---
 
-## Scripts
+## Philosophy & Theoretical Heritage
 
-| Command | Description |
-| --- | --- |
-| `npm run dev` | Start the local oracle console (Turbopack). |
-| `npm run build` | Compile the static production build. |
-| `npm run start` | Serve the production build. |
-| `npm run lint` | Run ESLint check. |
-| `npm run format` | Run Prettier code formatting. |
+Horizon sits at the intersection of several philosophical and economic schools of thought:
+1. **Existentialism (Sartre & Camus)**: Confronting the burden of choice when deciding whether a path continues to provide purpose or if it has entered stagnation.
+2. **Decision Theory under Uncertainty**: Integrating epistemic limits and forecasting horizons directly into value equations.
+3. **Loss Aversion and Sunk Cost Fallacy**: Acknowledging that humans often continue unviable paths out of inertia, and using mathematical baselines to decouple emotions from choices.
 
 ---
 
-*Terminus is an in-universe cessation decision oracle; all figures represent in-world mechanics. Head sculpture asset: Lee Perry‑Smith (Infinite‑Realities) · CC BY 3.0.*
+## Disclaimer
+
+This is a conceptual application exploring decision theory and subjective experience design. It is not a diagnostic, clinical, or formal risk assessment tool. The outputs should not be used as a substitute for professional counsel or personal judgment in critical life decisions.

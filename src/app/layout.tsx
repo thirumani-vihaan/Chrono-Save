@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
+import Footer from "@/components/layout/Footer";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -16,10 +17,13 @@ const playfair = Playfair_Display({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: "Terminus — Cessation Oracle",
-  description:
-    "A cessation decision oracle. Project expected happiness, suffering, and meaning across the visible horizon — then decide whether to continue or sever the thread forever.",
+export const metadata = {
+  title: "Horizon — Decision-Theory Explorer",
+  description: "An interactive dashboard for exploring how projected outcomes influence directional decisions. A design fiction.",
+  openGraph: {
+    title: "Horizon — Decision-Theory Explorer",
+    description: "An interactive dashboard for exploring how projected outcomes influence directional decisions. A design fiction.",
+  }
 };
 
 export const viewport: Viewport = {
@@ -38,6 +42,7 @@ export default function RootLayout({
     >
       <body className="min-h-full bg-black font-sans text-zinc-100">
         {children}
+        <Footer />
       </body>
     </html>
   );

@@ -272,7 +272,7 @@ export default function ControlPanel({
       <div className="space-y-5">
         <SliderField
           label="Character Level"
-          hint="Your current level. Higher levels reduce the remaining runway ahead."
+          hint="Your current level. Higher levels reduce the remaining planning horizon ahead."
           value={level}
           display={`${Math.round(level)}`}
           min={1}
@@ -287,14 +287,14 @@ export default function ControlPanel({
       <div>
         <div className="mb-4 flex items-center gap-2">
           <span className="text-xs font-medium uppercase tracking-[0.22em] text-zinc-400">
-            Future Experience Projection
+            Future Outcome Projection
           </span>
         </div>
         <div className="grid gap-4 md:grid-cols-3">
           <ExperienceGroup
-            dimensionLabel="Expected Happiness"
-            dimensionHint="Projected well-being and fulfillment over the visible horizon."
-            dimensionTooltip="How much joy and satisfaction do you expect going forward?"
+            dimensionLabel="Expected Satisfaction"
+            dimensionHint="Projected well-being and fulfillment over your planning horizon."
+            dimensionTooltip="How much satisfaction do you expect going forward?"
             dimensionValue={expectedHappiness}
             dimensionMin={0}
             dimensionMax={100}
@@ -302,15 +302,15 @@ export default function ControlPanel({
             onDimensionChange={onExpectedHappinessChange}
             dimensionAccent="#34d399"
             confLabel="Confidence"
-            confHint="How certain is this happiness forecast?"
+            confHint="How certain is this satisfaction forecast?"
             confValue={happinessConf}
             onConfChange={onHappinessConfChange}
             confAccent="#34d399"
           />
           <ExperienceGroup
-            dimensionLabel="Expected Suffering"
-            dimensionHint="Projected hardship, pain, and grinding decay ahead."
-            dimensionTooltip="How much suffering and anguish do you foresee?"
+            dimensionLabel="Expected Difficulty"
+            dimensionHint="Projected hardship, stress, and challenges ahead."
+            dimensionTooltip="How much difficulty and challenge do you foresee?"
             dimensionValue={expectedSuffering}
             dimensionMin={0}
             dimensionMax={100}
@@ -318,15 +318,15 @@ export default function ControlPanel({
             onDimensionChange={onExpectedSufferingChange}
             dimensionAccent="#fb7185"
             confLabel="Confidence"
-            confHint="How certain is this suffering forecast?"
+            confHint="How certain is this difficulty forecast?"
             confValue={sufferingConf}
             onConfChange={onSufferingConfChange}
             confAccent="#fb7185"
           />
           <ExperienceGroup
-            dimensionLabel="Expected Meaning"
-            dimensionHint="Projected purpose, significance, and reason to persist."
-            dimensionTooltip="How much meaning and purpose do you see in the path ahead?"
+            dimensionLabel="Expected Purpose"
+            dimensionHint="Projected purpose, significance, and reason to continue."
+            dimensionTooltip="How much purpose do you see in the path ahead?"
             dimensionValue={expectedMeaning}
             dimensionMin={0}
             dimensionMax={100}
@@ -334,7 +334,7 @@ export default function ControlPanel({
             onDimensionChange={onExpectedMeaningChange}
             dimensionAccent="#a78bfa"
             confLabel="Confidence"
-            confHint="How certain is this meaning forecast?"
+            confHint="How certain is this purpose forecast?"
             confValue={meaningConf}
             onConfChange={onMeaningConfChange}
             confAccent="#a78bfa"
@@ -345,9 +345,9 @@ export default function ControlPanel({
       {/* ── Future Visibility ── */}
       <div className="rounded-2xl border border-white/6 bg-white/[0.02] p-4">
         <SliderField
-          label="Future Visibility"
-          hint="How far into the future can you reasonably predict? Low visibility expands the possibility cone, pulling the verdict toward equilibrium."
-          tooltip="A major metric — determines how much of your remaining runway is 'visible' for forecasting."
+          label="Planning Horizon"
+          hint="How far ahead can you reasonably plan? Short planning horizons expand the cone, pulling the verdict toward balanced."
+          tooltip="A major metric — determines how much of your remaining horizon is 'visible' for forecasting."
           value={futureVisibility}
           display={`${Math.round(futureVisibility)}`}
           descriptor={descriptorForVisibility(futureVisibility)}
@@ -360,7 +360,7 @@ export default function ControlPanel({
         <div className="mt-3 flex items-center gap-2 text-[0.65rem] text-zinc-600">
           <Eye className="h-3 w-3" />
           <span>
-            Visibility ratio: {((futureVisibility / Math.max(MAX_LEVEL_DISPLAY - level, 1)) * 100).toFixed(0)}% of remaining runway
+            Horizon ratio: {((futureVisibility / Math.max(MAX_LEVEL_DISPLAY - level, 1)) * 100).toFixed(0)}% of remaining horizon
           </span>
         </div>
       </div>
@@ -411,7 +411,7 @@ export default function ControlPanel({
                   />
                   <SliderField
                     label="Ally Strength"
-                    tooltip="External support networks that sustain your existence."
+                    tooltip="External support networks that sustain your path."
                     hint="Social and external support."
                     value={ally}
                     display={`${ally.toFixed(0)}`}
@@ -423,7 +423,7 @@ export default function ControlPanel({
                   />
                   <SliderField
                     label="Resource Reserves"
-                    tooltip="Resources soften the impact of hardship and long stretches of suffering."
+                    tooltip="Resources soften the impact of hardship and long stretches of difficulty."
                     hint="Accumulated reserves and assets."
                     value={resources}
                     display={`${resources.toFixed(0)}`}
@@ -502,7 +502,7 @@ export default function ControlPanel({
           )}
         >
           <Play className="h-4 w-4 fill-black" />
-          Assess Cessation
+          Evaluate Direction
         </button>
         <p className="text-center text-[0.7rem] text-zinc-600">
           Results update in real time; the button just refreshes the pulse.

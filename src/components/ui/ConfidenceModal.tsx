@@ -42,7 +42,7 @@ export default function ConfidenceModal({ open, onClose }: ConfidenceModalProps)
                 </Dialog.Title>
 
                 <Dialog.Description className="mt-3 text-sm leading-relaxed text-zinc-400">
-                  Absolute certainty in playthrough projections is impossible. Please
+                  Absolute certainty in assessment projections is impossible. Please
                   set confidence ≤ {CERTAINTY_CAP.toFixed(2)}. Your input has
                   been snapped back to the cap.
                 </Dialog.Description>

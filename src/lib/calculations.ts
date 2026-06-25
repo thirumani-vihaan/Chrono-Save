@@ -28,6 +28,7 @@ export interface Inputs {
   versatility: number;
   rngEvents: number;
   sensitivity: number;
+  thresholdBias: number; // -10 to +10, default 0
 }
 
 export const DEFAULTS: Inputs = {
@@ -50,9 +51,10 @@ export const DEFAULTS: Inputs = {
   versatility: 50,
   rngEvents: 50,
   sensitivity: 50,
+  thresholdBias: 0,
 };
 
-export type Verdict = "Keep" | "Equilibrium" | "End";
+export type Verdict = "Keep" | "Equilibrium" | "Wait" | "End";
 
 export interface CampaignMetrics {
   R: number;
@@ -64,12 +66,12 @@ export interface CampaignMetrics {
   CW: number;
   EQI_adj: number;
   RS: number;
-  DRT: number;
   delta: number;
   CI: number;
   verdict: Verdict;
   resilienceBonus: number;
   sensitivityBias: number;
+  netValue: number; // Raw NES value, directly shows whether happiness > suffering
 }
 
 const clamp = (value: number, min: number, max: number) =>
@@ -107,24 +109,31 @@ export const VERDICT_META: Record<
   { label: string; short: string; description: string; color: string }
 > = {
   Keep: {
-    label: "Continue Existence",
-    short: "Continue",
+    label: "Continue Path",
+    short: "Continue Path",
     description:
-      "The projected experience ahead outweighs the cost of persisting. The possibility cone favours continuation — the thread holds.",
+      "Projected outcomes across the visible horizon favor continuation. The cone supports staying on your current path.",
     color: "#22d3ee",
   },
   Equilibrium: {
-    label: "Equilibrium — Uncertain Horizon",
-    short: "Equilibrium",
+    label: "Balanced",
+    short: "Balanced",
     description:
-      "The oracle cannot see far enough, or the projections are balanced. Happiness and suffering weigh equally across the visible horizon. Either choice can be justified.",
+      "Satisfaction and difficulty weigh equally across the visible horizon. Either choice can be justified.",
     color: "#facc15",
   },
-  End: {
-    label: "Cessation Recommended",
-    short: "End Forever",
+  Wait: {
+    label: "Wait",
+    short: "Wait",
     description:
-      "Projected suffering eclipses expected happiness and meaning across the visible horizon. The cone narrows toward termination. Ending is the rational path.",
+      "Uncertainty is too high to make a confident assessment. Reassess when you have more visibility.",
+    color: "#a78bfa", // purple
+  },
+  End: {
+    label: "Reassessment Recommended",
+    short: "Close Path",
+    description:
+      "Projected difficulty eclipses satisfaction and purpose across the visible horizon. The cone narrows toward reassessment. Closing this path is the rational choice.",
     color: "#fb7185",
   },
 };
@@ -135,34 +144,41 @@ export const VERDICT_META: Record<
  * 1. Net Experience Score (NES):
  *    Confidence-weighted balance of happiness, meaning, and suffering.
  *    NES = (H·Hc + M·Mc − S·Sc) / (Hc + Mc + Sc)
- *    Range: roughly −100 to +100
+ *    Range: roughly −100 to +100 (asymmetric based on confidence)
  *
  * 2. Experience Quality Index (EQI):
  *    Normalised NES to a 0–100 scale.
  *    EQI = clamp((NES + 100) / 2, 0, 100)
  *
  * 3. Future Visibility Ratio (VR):
- *    How much of the remaining runway is "visible" to the player.
+ *    How much of the remaining horizon is "visible" to the player.
  *    VR = futureVisibility / R, clamped [0, 1]
  *
  * 4. Cone Width (CW):
  *    The percentage of the future that lies beyond the visibility horizon.
  *    CW = (1 − VR) × 100
- *    High CW → high uncertainty → CI pulled toward 50
+ *    High CW → high uncertainty → EQI pulled toward 50
  *
  * 5. Cone-Adjusted EQI:
  *    EQI_adj = EQI + (50 − EQI) × (CW / 100) × CONE_DAMPING
- *    This models: "if you can't see far, you can't be confident
+ *    Models: "if you can't see far, you can't be confident
  *    about continuing OR ending."
  *
- * 6. Dynamic End Threshold (DRT):
- *    DRT = T + TOP − ResilienceBonus − SensitivityBias (unchanged)
+ * 6. Amplified Baseline:
+ *    rawCI = (EQI_adj − 50) × AMPLIFY + 50
+ *    EQI_adj lives in a compressed range (~35–75) due to the cone.
+ *    AMPLIFY expands it to fill the 0–100 CI scale.
  *
- * 7. Continuity Index (CI):
- *    delta = DRT − (100 − EQI_adj)
- *    CI = clamp(50 + delta × 2, 0, 100)
+ * 7. Modifiers (nudge the baseline):
+ *    optionalityBoost = TOP × 0.3     (longer horizon = slight reason to persist)
+ *    resilienceBoost  = (RS / 100) × 4 (support network cushions hardship)
+ *    thresholdBias    = inputs.thresholdBias (-10 to +10)
+ *
+ * 8. Continuity Index (CI):
+ *    CI = clamp(rawCI + optionalityBoost + resilienceBoost + thresholdBias, 0, 100)
  */
-const CONE_DAMPING = 0.6;
+const CONE_DAMPING = 0.4;
+const AMPLIFY = 2.5;
 
 export function calculateCampaignMetrics(inputs: Inputs): CampaignMetrics {
   const {
@@ -187,9 +203,9 @@ export function calculateCampaignMetrics(inputs: Inputs): CampaignMetrics {
   const safeH = clamp(expectedHappiness, 0, 100);
   const safeS = clamp(expectedSuffering, 0, 100);
   const safeM = clamp(expectedMeaning, 0, 100);
-  const safeHc = clamp(happinessConfidence, 0, CERTAINTY_CAP);
-  const safeSc = clamp(sufferingConfidence, 0, CERTAINTY_CAP);
-  const safeMc = clamp(meaningConfidence, 0, CERTAINTY_CAP);
+  const safeHc = clamp(happinessConfidence, 0.1, CERTAINTY_CAP);
+  const safeSc = clamp(sufferingConfidence, 0.1, CERTAINTY_CAP);
+  const safeMc = clamp(meaningConfidence, 0.1, CERTAINTY_CAP);
   const safeFV = clamp(futureVisibility, 1, 50);
 
   const safeMorale = clamp(morale, 0, 100);
@@ -200,7 +216,7 @@ export function calculateCampaignMetrics(inputs: Inputs): CampaignMetrics {
   const safeRngEvents = clamp(rngEvents, 0, 100);
   const safeSensitivity = clamp(sensitivity, 0, 100);
 
-  // ── Runway ──
+  // ── Horizon ──
   const R = Math.max(MAX_LEVEL - safeLevel, 1);
   const T = R / 2;
   const TOP = R * TOP_MULTIPLIER;
@@ -212,6 +228,17 @@ export function calculateCampaignMetrics(inputs: Inputs): CampaignMetrics {
       ? (safeH * safeHc + safeM * safeMc - safeS * safeSc) / totalConf
       : 0;
 
+  /*
+  // Option B — Convert to Suffering Buffer (Alternative):
+  // Meaning buffers suffering: 100 meaning = 100% suffering reduction buffer
+  // 50 meaning = 50% of suffering is buffered
+  const bufferedSuffering = safeS * (1 - (safeM / 100) * 0.5);
+  const NES =
+    (safeHc + safeSc) > 0
+      ? (safeH * safeHc - bufferedSuffering * safeSc) / (safeHc + safeSc)
+      : 0;
+  */
+
   // ── Experience Quality Index (0–100) ──
   const EQI = clamp((NES + 100) / 2, 0, 100);
 
@@ -220,9 +247,16 @@ export function calculateCampaignMetrics(inputs: Inputs): CampaignMetrics {
   const CW = (1 - VR) * 100;
 
   // ── Cone-Adjusted EQI ──
+  // Pulls EQI toward 50 based on how much of the future is invisible.
+  // CONE_DAMPING = 0.4 → moderate pull (not too aggressive).
   const EQI_adj = EQI + (50 - EQI) * (CW / 100) * CONE_DAMPING;
 
-  // ── Resilience (unchanged) ──
+  // ── Amplified Baseline ──
+  // EQI_adj is compressed (~35–75 typical range after cone).
+  // AMPLIFY = 2.5 expands deviations from 50 to fill the full CI scale.
+  const rawCI = (EQI_adj - 50) * AMPLIFY + 50;
+
+  // ── Resilience & Modifiers ──
   const RS =
     (safeMorale +
       safeAlly +
@@ -231,18 +265,34 @@ export function calculateCampaignMetrics(inputs: Inputs): CampaignMetrics {
       safeVersatility +
       safeRngEvents) /
     6;
-  const resilienceBonus = (RS / 100) * RESILIENCE_SCALE;
-  const sensitivityBias = (safeSensitivity / 100) * SENSITIVITY_SCALE;
-  const DRT = T + TOP - resilienceBonus - sensitivityBias;
 
-  // ── Final Index ──
-  const delta = DRT - (100 - EQI_adj);
-  const CI = clamp(50 + delta * 2, 0, 100);
+  const resilienceBonus = (RS / 100) * RESILIENCE_SCALE; // kept for display
+  const sensitivityBias = (safeSensitivity / 100) * SENSITIVITY_SCALE; // kept for display
+
+  const optionalityBoost = TOP * 0.3; // 0–1.7: longer horizon = slight push to continue
+  const resilienceBoost = (RS / 100) * 4; // 0–4: support network cushions hardship
+  const thresholdBias = clamp(inputs.thresholdBias, -10, 10);
+
+  // ── Continuity Index ──
+  const CI = clamp(
+    rawCI + optionalityBoost + resilienceBoost + thresholdBias,
+    0,
+    100,
+  );
+
+  // delta = deviation from equilibrium (for display)
+  const delta = (CI - 50) / 2;
 
   let verdict: Verdict;
-  if (CI > 70) verdict = "Keep";
-  else if (CI >= 30) verdict = "Equilibrium";
-  else verdict = "End";
+  if (CW > 80) {
+    verdict = "Wait";
+  } else if (CI > 70) {
+    verdict = "Keep";
+  } else if (CI >= 30) {
+    verdict = "Equilibrium";
+  } else {
+    verdict = "End";
+  }
 
   return {
     R,
@@ -254,11 +304,11 @@ export function calculateCampaignMetrics(inputs: Inputs): CampaignMetrics {
     CW,
     EQI_adj,
     RS,
-    DRT,
     delta,
     CI,
     verdict,
     resilienceBonus,
     sensitivityBias,
+    netValue: NES,
   };
 }

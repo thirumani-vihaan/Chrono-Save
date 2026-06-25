@@ -12,19 +12,19 @@ interface LoreItem {
 const items: LoreItem[] = [
   {
     q: "The premise",
-    a: "Every existence reaches a crossroads where the path ahead becomes unclear. This oracle does not measure stagnation — it projects experience. By forecasting expected happiness, suffering, and meaning across the visible horizon, it quantifies whether the thread ahead is worth holding. Continuing is the default. But when the projected suffering eclipses all meaning, the oracle calculates whether it is time to sever the thread permanently.",
+    a: "Every direction reaches a point where the path ahead becomes unclear. This tool does not measure stagnation — it projects outcomes. By forecasting expected satisfaction, difficulty, and purpose across the visible horizon, it quantifies whether the current path is worth holding. Continuing is the default. But when projected difficulty outweighs satisfaction and purpose, the model calculates whether it is time to close that path and consider a new direction.",
   },
   {
-    q: "How the oracle thinks",
-    a: "The engine begins with three dimensions of projected experience — happiness, suffering, and meaning — each weighted by your own confidence in that forecast. These combine into a Net Experience Score (NES) and normalise to an Experience Quality Index (EQI). Then your Future Visibility determines how far ahead you can reasonably see. Beyond that horizon, the Possibility Cone expands: high uncertainty pulls the verdict toward Equilibrium, because you cannot justify ending what you cannot see. The cone-adjusted EQI is weighed against the Dynamic End Threshold to produce the Continuity Index.",
+    q: "How the model thinks",
+    a: "The engine begins with three dimensions of projected outcomes — satisfaction, difficulty, and purpose — each weighted by your own confidence in that forecast. These combine into a Net Outcome Score (NES) and normalise to an Outcome Quality Index (EQI). Then your Planning Horizon determines how far ahead you can reasonably see. Beyond that horizon, the Uncertainty Cone expands: high uncertainty pulls the verdict toward Balanced, because you cannot justify closing a path you cannot see. The cone-adjusted EQI is weighed against the Dynamic Threshold to produce the Continuity Score.",
   },
   {
-    q: "Reading your verdict",
-    a: "A high Continuity Index means the projected experience ahead favours continuation — persist with the current path (the default choice). A middling Index sits in Equilibrium, often because the visibility horizon is too short to see clearly — either staying or ending can be justified. A low Index means projected suffering has overwhelmed happiness and meaning across the visible horizon. There are no second chances; once the thread is cut, the path ends forever.",
+    q: "Reading your assessment",
+    a: "A high Continuity Score means the projected outcomes ahead favour continuation — stay on your current path (the default choice). A middling Score sits in Balanced, often because the planning horizon is too short to see clearly — either continuing or reassessing can be justified. A low Score means projected difficulty has overwhelmed satisfaction and purpose across the visible horizon. There are no second chances; once the path is closed, the assessment ends forever.",
   },
   {
-    q: "Why possibility cones?",
-    a: "The further you look into the future, the less certain you can be. The Possibility Cone models this fundamental truth. Within your visibility horizon, your forecasts carry weight. Beyond it, uncertainty expands rapidly — the cone widens, and the oracle cannot confidently recommend either continuation or cessation. This prevents premature endings when you simply cannot see far enough, and prevents false hope when the visible horizon is already dark.",
+    q: "Why uncertainty cones?",
+    a: "The further you look into the future, the less certain you can be. The Uncertainty Cone models this fundamental truth. Within your planning horizon, your forecasts carry weight. Beyond it, uncertainty expands rapidly — the cone widens, and the model cannot confidently recommend either continuation or reassessment. This prevents premature closures when you simply cannot see far enough, and prevents false hope when the visible horizon is already dark.",
   },
 ];
 
@@ -80,7 +80,7 @@ export default function LoreAccordion() {
           The Lore
         </span>
         <h2 className="mt-3 font-display text-4xl font-bold italic text-white sm:text-5xl">
-          The logic of cessation
+          The logic of reassessment
         </h2>
       </motion.div>
 

@@ -26,7 +26,7 @@ export default function Hero() {
         className="glass inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-medium uppercase tracking-[0.28em] text-zinc-300"
       >
         <Skull className="h-3.5 w-3.5 text-rose-400" />
-        Cessation Decision Oracle
+        Decision-Theory Explorer
       </motion.span>
 
       <motion.h1
@@ -34,7 +34,7 @@ export default function Hero() {
         className="mt-7 font-display text-5xl font-bold italic leading-[1.02] tracking-tight text-balance sm:text-7xl"
       >
         <span className="bg-gradient-to-b from-white to-zinc-500 bg-clip-text text-transparent">
-          Terminus
+          Horizon
         </span>
       </motion.h1>
 
@@ -42,9 +42,7 @@ export default function Hero() {
         variants={item}
         className="mt-5 max-w-xl text-lg leading-relaxed text-zinc-400 text-balance"
       >
-        Project the expected happiness, suffering, and meaning of the path
-        ahead — then let the oracle decide whether to continue or sever the
-        thread forever. There are no second chances.
+        Project expected satisfaction, difficulty, and purpose across your planning horizon — then let the model evaluate whether to continue your current path or consider a new direction. This is a one-time assessment.
       </motion.p>
 
       <motion.div variants={item} className="mt-9 flex flex-wrap items-center justify-center gap-3">
@@ -52,7 +50,7 @@ export default function Hero() {
           href="#console"
           className="group inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition-transform hover:scale-[1.03] active:scale-95"
         >
-          Consult the Oracle
+          Consult the Model
           <ArrowDown className="h-4 w-4 transition-transform group-hover:translate-y-0.5" />
         </a>
         <a

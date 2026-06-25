@@ -17,8 +17,8 @@ interface FloatCard {
 const cards: FloatCard[] = [
   {
     quote:
-      "My suffering forecast read 82. But the cone was wide — I couldn't see far enough to justify ending it.",
-    who: "The Wanderer",
+      "This framework helped us realize our high difficulty projections were short term noise. We decided to continue our current path.",
+    who: "Product Director",
     pos: "left-2 top-[6%] xl:left-6",
     dur: 12,
     delay: 0,
@@ -26,8 +26,8 @@ const cards: FloatCard[] = [
     to: "#3f3f46",
   },
   {
-    quote: "Expected meaning held at 71. The oracle said continue. I held the line.",
-    who: "The Vanguard",
+    quote: "The uncertainty cone visualizes the exact limits of our forecasting. It prevented us from making a premature pivot.",
+    who: "Operations Lead",
     pos: "right-2 top-[2%] xl:right-8",
     dur: 10,
     delay: 0.6,
@@ -35,8 +35,8 @@ const cards: FloatCard[] = [
     to: "#3f6f78",
   },
   {
-    quote: "High confidence is a trap — the model snapped all three forecasts back to 0.90.",
-    who: "The Archivist",
+    quote: "Adjusting the confidence metrics helped us separate our high optimism from the actual probability of success.",
+    who: "Strategic Planner",
     pos: "left-2 top-[60%] xl:left-10",
     dur: 13,
     delay: 1.1,
@@ -44,8 +44,8 @@ const cards: FloatCard[] = [
     to: "#4c3f78",
   },
   {
-    quote: "Visibility horizon: 3 turns. The cone swallowed everything. Equilibrium was inevitable.",
-    who: "The Strider",
+    quote: "By mapping out the visibility horizon, we finally had a structured way to decide if we should hold our direction.",
+    who: "Research Lead",
     pos: "right-2 top-[64%] xl:right-6",
     dur: 11,
     delay: 0.3,

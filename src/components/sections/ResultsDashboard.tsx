@@ -60,16 +60,16 @@ function PossibilityCone({
     <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-4">
       <div className="flex items-center justify-between mb-3">
         <div className="text-[0.65rem] font-medium uppercase tracking-[0.18em] text-zinc-500">
-          Possibility Cone
+          Uncertainty Cone
         </div>
         <div className="flex items-center gap-3 text-[0.65rem] text-zinc-500">
           <span className="flex items-center gap-1">
             <span className="inline-block h-2 w-2 rounded-full" style={{ backgroundColor: ciColor }} />
-            Visible ({(VR * 100).toFixed(0)}%)
+            Within Horizon ({(VR * 100).toFixed(0)}%)
           </span>
           <span className="flex items-center gap-1">
             <span className="inline-block h-2 w-2 rounded-full bg-zinc-600" />
-            Beyond horizon ({CW.toFixed(0)}%)
+            Beyond Horizon ({CW.toFixed(0)}%)
           </span>
         </div>
       </div>
@@ -185,13 +185,13 @@ function PossibilityCone({
           Horizon
         </motion.text>
         <text x={endX} y={height - 2} fill="rgba(161,161,170,0.3)" fontSize={9} fontFamily="var(--font-inter)" textAnchor="end">
-          End of runway
+          End of planning horizon
         </text>
       </svg>
 
       <div className="mt-2 flex justify-between text-[0.65rem] text-zinc-600">
         <span>EQI {EQI.toFixed(1)} → Adjusted {EQI_adj.toFixed(1)}</span>
-        <span>Cone pulls {CW > 30 ? "strongly" : "mildly"} toward equilibrium</span>
+        <span>Cone pulls {CW > 30 ? "strongly" : "mildly"} toward balanced</span>
       </div>
     </div>
   );
@@ -225,7 +225,7 @@ export default function ResultsDashboard({
             Results
           </h2>
           <p className="mt-1 text-xs uppercase tracking-[0.2em] text-zinc-500">
-            Live verdict
+            Current assessment
           </p>
         </div>
         <span
@@ -240,7 +240,7 @@ export default function ResultsDashboard({
       </div>
 
       <div className="flex flex-col items-center gap-5 lg:flex-row lg:items-center lg:gap-8">
-        <GaugeMeter value={metrics.CI} color={gaugeColor} label="Continuity Index" />
+        <GaugeMeter value={metrics.CI} color={gaugeColor} label="Continuity Score" />
 
         <div className="flex-1 text-center lg:text-left">
           <motion.h3
@@ -260,6 +260,9 @@ export default function ResultsDashboard({
             <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-zinc-400">
               CI {metrics.CI.toFixed(1)}
             </span>
+            <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-zinc-400">
+              Net value: {metrics.netValue.toFixed(1)} (0 = null / cessation)
+            </span>
             <span
               className="rounded-full border px-3 py-1 text-xs font-medium"
               style={{
@@ -277,7 +280,7 @@ export default function ResultsDashboard({
         </div>
       </div>
 
-      {/* ── Possibility Cone Visualization ── */}
+      {/* ── Uncertainty Cone Visualization ── */}
       <PossibilityCone
         VR={metrics.VR}
         CW={metrics.CW}
@@ -289,26 +292,26 @@ export default function ResultsDashboard({
       {/* ── Stat Cards ── */}
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
         <StatCard
-          label="Remaining Runway (R)"
+          label="Remaining Horizon (R)"
           value={metrics.R.toFixed(0)}
           hint="82 − level"
         />
         <StatCard
-          label="Experience Quality (EQI)"
+          label="Outcome Quality (EQI)"
           value={metrics.EQI.toFixed(1)}
-          hint="Net experience score normalised to 0–100"
+          hint="Net outcome score normalised to 0–100"
           accent={metrics.EQI >= 50 ? "#34d399" : "#fb7185"}
         />
         <StatCard
           label="Cone Width (CW)"
           value={`${metrics.CW.toFixed(1)}%`}
-          hint="Uncertainty beyond the visibility horizon"
+          hint="Uncertainty beyond the planning horizon"
           accent="#fbbf24"
         />
         <StatCard
           label="Delta (Δ)"
           value={`${metrics.delta >= 0 ? "+" : ""}${metrics.delta.toFixed(2)}`}
-          hint="Threshold minus experience-adjusted weight"
+          hint="Threshold minus outcome-adjusted weight"
           accent={deltaTone}
         />
       </div>

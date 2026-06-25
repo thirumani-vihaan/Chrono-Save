@@ -23,10 +23,8 @@ const formula = [
   { k: "EQI", v: "(NES + 100) / 2" },
   { k: "VR", v: "FV / R" },
   { k: "CW", v: "(1 − VR) × 100" },
-  { k: "EQI′", v: "EQI + (50 − EQI)·CW·0.6" },
-  { k: "DRT", v: "T + TOP − RB − SB" },
-  { k: "Δ", v: "DRT − (100 − EQI′)" },
-  { k: "CI", v: "clamp(50 + Δ · 2)" },
+  { k: "EQI′", v: "EQI + (50 − EQI)·CW·κ" },
+  { k: "CI", v: "(EQI′ − 50) · α + 50 + mods" },
 ];
 
 export default function Home() {
@@ -51,6 +49,7 @@ export default function Home() {
   const [versatility, setVersatility] = useState(DEFAULTS.versatility);
   const [rngEvents, setRngEvents] = useState(DEFAULTS.rngEvents);
   const [sensitivity, setSensitivity] = useState(DEFAULTS.sensitivity);
+  const [thresholdBias, setThresholdBias] = useState(DEFAULTS.thresholdBias);
 
   const [confidenceModalOpen, setConfidenceModalOpen] = useState(false);
   const [pulseKey, setPulseKey] = useState(0);
@@ -79,6 +78,7 @@ export default function Home() {
         versatility,
         rngEvents,
         sensitivity,
+        thresholdBias,
       }),
     [
       level,
@@ -96,6 +96,7 @@ export default function Home() {
       versatility,
       rngEvents,
       sensitivity,
+      thresholdBias,
     ],
   );
 
@@ -122,6 +123,7 @@ export default function Home() {
     versatility,
     rngEvents,
     sensitivity,
+    thresholdBias,
   ]);
 
   const handleReset = useCallback(() => {
@@ -140,6 +142,7 @@ export default function Home() {
     setVersatility(DEFAULTS.versatility);
     setRngEvents(DEFAULTS.rngEvents);
     setSensitivity(DEFAULTS.sensitivity);
+    setThresholdBias(DEFAULTS.thresholdBias);
     setConfidenceModalOpen(false);
   }, []);
 
@@ -194,7 +197,7 @@ export default function Home() {
               The Console
             </span>
             <h2 className="mt-3 font-display text-4xl font-bold italic text-white sm:text-5xl">
-              Consult the Oracle
+              Consult the Model
             </h2>
           </div>
 
@@ -248,15 +251,6 @@ export default function Home() {
 
         <LoreAccordion />
 
-        <footer className="border-t border-white/8 px-6 py-10 text-center">
-          <p className="text-xs text-zinc-600">
-            Terminus · a cessation decision oracle. All figures are
-            in-world mechanics.
-          </p>
-          <p className="mt-2 text-[0.65rem] text-zinc-700">
-            Head sculpture: Lee Perry-Smith (Infinite-Realities) · CC BY 3.0.
-          </p>
-        </footer>
       </div>
 
       <ConfidenceModal

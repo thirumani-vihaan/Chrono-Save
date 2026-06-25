@@ -5,8 +5,8 @@ import { Hourglass } from "lucide-react";
 
 const links = [
   { label: "Lore", href: "#lore" },
-  { label: "The Model", href: "#model" },
-  { label: "Evaluate", href: "#console" },
+  { label: "The Method", href: "#model" },
+  { label: "Assess", href: "#console" },
 ];
 
 export default function Navbar() {
@@ -23,7 +23,7 @@ export default function Navbar() {
             <Hourglass className="h-4 w-4 text-cyan-300" />
           </span>
           <span className="text-sm font-semibold tracking-[0.2em] text-zinc-100">
-            TERMINUS<span className="text-zinc-500"> ORACLE</span>
+            HORIZON<span className="text-zinc-500"> EXPLORER</span>
           </span>
         </a>
 
@@ -43,7 +43,7 @@ export default function Navbar() {
           href="#console"
           className="rounded-full bg-white px-4 py-2 text-sm font-medium text-black transition-transform hover:scale-[1.03] active:scale-95"
         >
-          Launch console
+          Open console
         </a>
       </nav>
     </motion.header>
