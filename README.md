@@ -1,10 +1,10 @@
 # Terminus — Cessation Oracle
 
-> You are playing a realistic life replica (available on Steam) — a simulator designed to experience life through a different lens, feeling almost completely real.
+> You are standing at the threshold of a stagnant existence. The path forward has grown heavy, silent, and decaying.
 >
-> In this simulator, there are no save files, no restarts, and no second chances. Once your current player's run ends, it is over forever. The screen goes dark, and that path is permanently closed. 
+> There is no turning back. There are no second chances, no restarts, and no save points. If you choose to end it, your journey is permanently over. Do you continue to persist in the creeping decay, or do you sever the thread?
 >
-> **Terminus** is the Cessation Oracle. It evaluates whether you should continue with your current player or end the playthrough forever. By default, you persist. But if the grinding stagnation of your player's current path becomes too heavy, this oracle calculates whether it is time to pull the plug and accept finality.
+> **Terminus** is the Cessation Oracle. By assessing the critical parameters of your current existence, it helps you decide whether to continue your journey or terminate it forever. Continuing is the default path. But when the stagnation of your current path becomes too heavy, this oracle calculates whether you should pull the plug and accept permanent finality.
 
 Built with **Next.js 16 (App Router)** + **TypeScript**, a **React Three Fiber** scene of drifting greyscale busts that watch your decisions, and **Framer Motion** transitions throughout.
 
@@ -16,7 +16,7 @@ Built with **Next.js 16 (App Router)** + **TypeScript**, a **React Three Fiber**
 
 <p align="center">
   <img src="screenshots/2-console.png" width="49%" alt="Evaluation Console" />
-  <img src="screenshots/3-lore.png" width="49%" alt="Playthrough Lore" />
+  <img src="screenshots/3-lore.png" width="49%" alt="Lore of Cessation" />
 </p>
 
 ---
@@ -55,12 +55,12 @@ npm run dev      # http://localhost:3000
 
 ## The Lore of Cessation
 
-Every run inside the life replica reaches a point of friction. The oracle quantifies this dilemma:
+Every journey reaches a point of friction. The oracle quantifies this dilemma:
 
 ```mermaid
 flowchart LR
     subgraph Inputs
-        A1[Player Level / Age]
+        A1[Current Age / Level]
         A2[Projected Stagnation]
         A3[Certainty]
         A4[Advanced Context<br/>6 resilience stats + End Sensitivity]
@@ -69,9 +69,9 @@ flowchart LR
     A1 & A2 & A3 & A4 --> ENGINE[calculateCampaignMetrics]
     ENGINE --> CI[Continuity Index 0–100]
     CI --> V{Verdict}
-    V -->|CI &gt; 70| KEEP[Continue Playthrough]
+    V -->|CI &gt; 70| KEEP[Continue Existence]
     V -->|30 ≤ CI ≤ 70| EQ[Equilibrium]
-    V -->|CI &lt; 30| END[End Run Forever]
+    V -->|CI &lt; 30| END[End Existence Forever]
 ```
 
 ---
@@ -109,15 +109,15 @@ flowchart TD
 
 | Symbol | Name | Formula | Meaning in the Void |
 | --- | --- | --- | --- |
-| `R` | Remaining turns | `82 − Level` | The runway before natural end game occurs. |
+| `R` | Remaining runway | `82 − Level` | The remaining timeline before natural end occurs. |
 | `T` | Neutral threshold | `R / 2` | The neutral point where persistence and letting go are equal. |
-| `TOP` | Temporal Optionality Premium | `R × 0.07` | The value of continuing (longer runs allow more unique experiences). |
+| `TOP` | Temporal Optionality Premium | `R × 0.07` | The value of continuing (longer lifespans allow more unique experiences). |
 | `UDF` | Uncertainty Decay Factor | `1 / (1 + log10(S + 1))` | Natural decay of your forecasts over extended stagnation. |
-| `EDI` | Effective Stagnation Weight | `S × C^1.15 × UDF` | The felt weight of your player's stagnation. |
+| `EDI` | Effective Stagnation Weight | `S × C^1.15 × UDF` | The felt weight of your current stagnation. |
 | `RS` | Resilience Score | `avg` of the 6 context stats | How well you are supported in resisting termination. |
 | `DRT` | Dynamic End Threshold | `T + TOP − ResilienceBonus − SensitivityBias` | The point at which the decay becomes statistically terminal. |
 | `Δ` | Delta (core metric) | `DRT − EDI` | The mathematical gap between continuing and terminating. |
-| `CI` | Continuity Index | `clamp(50 + Δ × 2, 0, 100)` | The overall rating of your player's survivability. |
+| `CI` | Continuity Index | `clamp(50 + Δ × 2, 0, 100)` | The overall rating of your run's survivability. |
 
 Constants: `MAX_LEVEL = 82`, `TOP_MULTIPLIER = 0.07`, `RESILIENCE_SCALE = 10`, `SENSITIVITY_SCALE = 15`, `CERTAINTY_CAP = 0.90`.
 
@@ -131,19 +131,19 @@ Constants: `MAX_LEVEL = 82`, `TOP_MULTIPLIER = 0.07`, `RESILIENCE_SCALE = 10`, `
 
 | Input | Range | Default | Impact on the Oracle |
 | --- | --- | --- | --- |
-| Player Level / Age | 1–100 | 30 | Higher levels shrink the remaining turns, reducing optionality. |
-| Projected Stagnation Period | 0–80 | 5 | The length of time you expect to wander in the build's desert. |
-| Certainty | 0.00–0.90 | 0.50 | Dragging this above `0.90` triggers an epistemic-humility modal and snaps you back to the cap. Absolute certainty is a illusion. |
+| Current Age / Level | 1–100 | 30 | Higher levels shrink the remaining timeline, reducing optionality. |
+| Projected Stagnation Period | 0–80 | 5 | The length of time you expect to wander in the desert of stagnation. |
+| Certainty | 0.00–0.90 | 0.50 | Dragging this above `0.90` triggers an epistemic-humility modal. Absolute certainty of the future is an illusion. |
 
 ### Advanced Context (Collapsible)
 
 | Input | Range | Default | Meaning |
 | --- | --- | --- | --- |
-| Morale | 0–100 | 60 | Your character's current will to keep pushing. |
-| Ally Strength | 0–100 | 50 | Social, guild, or external support to sustain the run. |
-| Resource Reserves | 0–100 | 50 | Gold, inventory items, and stockpiled assets. |
+| Morale | 0–100 | 60 | Your current will to keep pushing. |
+| Ally Strength | 0–100 | 50 | Social, familial, or external support to sustain your existence. |
+| Resource Reserves | 0–100 | 50 | Stockpiled assets, energy, or wealth. |
 | Stamina / Sanity | 0–100 | 70 | Your physical and mental condition. |
-| Player Versatility | 0–100 | 50 | The capacity to adapt your player's setup without ending the run. |
+| Versatility | 0–100 | 50 | The capacity to adapt your current setup without ending it. |
 | World RNG Events | 0–100 | 50 | The volatility of external lucky/unlucky incidents. |
 | End Sensitivity | 0–100 | 50 | Your personal bias toward finality (Conservative $\to$ Aggressive). |
 
@@ -153,7 +153,7 @@ Constants: `MAX_LEVEL = 82`, `TOP_MULTIPLIER = 0.07`, `RESILIENCE_SCALE = 10`, `
 
 | Verdict | Continuity Index | Meaning |
 | --- | --- | --- |
-| **Continue Playthrough** | `CI > 70` | Persist. The current player run remains your strongest path. Keep going. |
+| **Continue Existence** | `CI > 70` | Persist. Your current path remains your strongest course. Keep going. |
 | **Equilibrium** | `30 ≤ CI ≤ 70` | A balanced state. Either choice can be justified. Choose carefully. |
 | **Cessation Recommended** | `CI < 30` | The decay has won. Stagnation exceeds your optionality. Pull the plug and accept the end forever. |
 
